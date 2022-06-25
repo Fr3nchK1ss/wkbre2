@@ -6,4 +6,5 @@ target_sources(${TARGET} PRIVATE
     "TagDict.h"
     "IndexedStringList.h"
     "util.cpp" "util.h"
-    "GSFileParser.cpp" "GSFileParser.h")
+    "GSFileParser.cpp" "GSFileParser.h"
+    "StriCompare.h")
