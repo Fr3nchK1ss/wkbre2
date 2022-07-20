@@ -8,6 +8,7 @@
 #include "gfx/bitmap.h"
 #include "window.h"
 #include <cstdint>
+#include <limits>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_syswm.h>
 
