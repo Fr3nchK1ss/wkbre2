@@ -8,6 +8,7 @@
 #include <map>
 #include <string>
 #include <cstring>
+#include <iostream>
 //#include <direct.h>
 #include <utility>
 #include <thread>
@@ -46,6 +47,7 @@
 #define WIN32_LEAN_AND_MEAN
 #define NOMINMAX
 #include <enet/enet.h>
+#include "util/StriCompare.h"
 
 void Test_GameSet()
 {
@@ -53,11 +55,11 @@ void Test_GameSet()
 
 	GameSet gameSet("Warrior Kings Game Set\\multi-player extensions.cpp", GameSet::GSVERSION_UNKNOWN);
 
-	printf("List of %i items:\n", gameSet.items.names.size());
+    std::cout <<  "List of " << gameSet.items.names.size() << " items:" << std::endl;
 	for (const std::string &item : gameSet.items.names)
 		printf("%s\n", item.c_str());
 
-	printf("List of %i defined values:\n", gameSet.definedValues.size());
+    std::cout <<  "List of " << gameSet.definedValues.size() << " defined values:" << std::endl;
 	for (auto &dv : gameSet.definedValues)
 		printf("%s: %f\n", dv.first.c_str(), dv.second);
 
@@ -318,11 +320,7 @@ void FileExplorer()
 	if (t29curfiles)
 		for (const std::string &filename : *t29curfiles) {
 			const char *ext = strrchr(filename.c_str(), '.');
-#ifdef _WIN32
-            if (!_stricmp(ext, ".mesh3")) {
-#else
-			if (!strcasecmp(ext, ".mesh3")) {
-#endif
+            if (!icompare(ext, ".mesh3")) {
 				if (ImGui::Selectable(filename.c_str())) {
 					feselfile = t29curdir + "\\" + filename;
 					printf("Selected file: %s\n", feselfile.c_str());
@@ -571,6 +569,8 @@ void Test_EnetServer() {
 				link->packets.push(event.packet);
 				break;
 			}
+            default:
+                break;
 			}
 		}
 

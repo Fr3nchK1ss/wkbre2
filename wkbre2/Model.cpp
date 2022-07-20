@@ -4,6 +4,7 @@
 
 #include "Model.h"
 #include "util/util.h"
+#include "util/StriCompare.h"
 #include <mutex>
 
 static std::recursive_mutex g_modelPreparationMutex;
@@ -18,20 +19,12 @@ Model * ModelCache::getModel(const std::string & filename) {
 	}
 
 	const char *ext = strrchr(filename.c_str(), '.');
-#ifdef _WIN32
-    if (!_stricmp(ext + 1, "mesh3")) {
-#else
-    if (!strcasecmp(ext + 1, "mesh3")) {
-#endif
+    if (!icompare(ext+ 1, "mesh3")) {
 		StaticModel *m = new StaticModel(this, filename);
 		models[filename].reset(m);
 		return m;
 	}
-#ifdef _WIN32
-    else if (!_stricmp(ext + 1, "anim3")) {
-#else
-    else if (!strcasecmp(ext + 1, "anim3")) {
-#endif
+    else if (!icompare(ext + 1, "anim3")) {
 		AnimatedModel *m = new AnimatedModel(this, filename);
 		models[filename].reset(m);
 		return m;

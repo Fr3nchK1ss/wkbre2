@@ -5,6 +5,7 @@
 #include "wkbre2.h"
 #include "file.h"
 #include "util/util.h"
+#include "util/StriCompare.h"
 #include <algorithm>
 #include <cstring>
 #include <mutex>
@@ -197,15 +198,11 @@ lflp:		c = strchr(p, '\\');
 		{
 			// A file!
 			for(int i = 0; i < ad->nfiles; i++)
-#ifdef _WIN32
-            if(!_stricmp(p, ad->files[i].name.c_str()))
-#else
-			if(!strcasecmp(p, ad->files[i].name.c_str()))
-#endif
-			{
-				// File found!
-				return &ad->files[i];
-			}
+                if (!icompare(p, ad->files[i].name.c_str()))
+                {
+                    // File found!
+                    return &ad->files[i];
+                }
 			break; // File not found.
 
 		} else {
@@ -221,11 +218,7 @@ lflp:		c = strchr(p, '\\');
 				goto lflp;
 			}
 			for(int i = 0; i < ad->ndirs; i++)
-#ifdef _WIN32
-            if(!_stricmp(p, ad->dirs[i].name.c_str()))
-#else
-			if(!strcasecmp(p, ad->dirs[i].name.c_str()))
-#endif
+            if (!icompare(p, ad->dirs[i].name.c_str()))
 			{
 				// Dir found!
 				p = c+1;
@@ -263,11 +256,7 @@ lflp:		c = strchr(p, '\\');
 				goto lflp;
 			}
 			for(int i = 0; i < ad->ndirs; i++)
-#ifdef _WIN32
-            if(!_stricmp(p, ad->dirs[i].name.c_str()))
-#else
-			if(!strcasecmp(p, ad->dirs[i].name.c_str()))
-#endif
+            if (!icompare(p, ad->dirs[i].name.c_str()))
 			{
 				// Dir found!
 				p = c+1;
@@ -287,11 +276,7 @@ lflp:		c = strchr(p, '\\');
 				return ad;
 			}
 			for(int i = 0; i < ad->ndirs; i++)
-#ifdef _WIN32
-            if(!_stricmp(p, ad->dirs[i].name.c_str()))
-#else
-			if(!strcasecmp(p, ad->dirs[i].name.c_str()))
-#endif
+            if (!icompare(p, ad->dirs[i].name.c_str()))
 			{
 				// Dir found!
 				ad = &ad->dirs[i];
@@ -334,11 +319,7 @@ void BCPReader::listDirectories(const char *dn, std::vector<std::string> *gsl)
 	BCPDirectory *ad = getDirectory(dn);
 	if(!ad) return;
 	for(int i = 0; i < ad->ndirs; i++)
-#ifdef _WIN32
-        if (std::find_if(gsl->begin(), gsl->end(), [&](const std::string& s) { return !_stricmp(s.c_str(), ad->dirs[i].name.c_str()); }) == gsl->end())
-#else
-		if (std::find_if(gsl->begin(), gsl->end(), [&](const std::string& s) { return !strcasecmp(s.c_str(), ad->dirs[i].name.c_str()); }) == gsl->end())
-#endif
+        if (std::find_if(gsl->begin(), gsl->end(), [&](const std::string& s) { return !icompare(s.c_str(), ad->dirs[i].name.c_str()); }) == gsl->end())
 			gsl->push_back(ad->dirs[i].name);
 }
 
@@ -648,12 +629,8 @@ void BCPWriter::copyFile(const char *fn)
 	char *p = const_cast<char*>(fncopy.data());
 	while (char *s = strchr(p, '\\')) {
 		*s = 0;
-		for (uint i = 0; i < (uint)d->dirs.size(); i++)
-#ifdef _WIN32
-            if (!_stricmp(d->dirs[i]->name.c_str(), p)) {
-#else
-			if (!strcasecmp(d->dirs[i]->name.c_str(), p)) {
-#endif
+        for (uint i = 0; i < (uint)d->dirs.size(); i++)
+            if (!icompare(d->dirs[i]->name.c_str(), p)) {
 				d = d->dirs[i];
 				goto dirfnd;
 			}

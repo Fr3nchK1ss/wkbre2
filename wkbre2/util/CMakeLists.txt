@@ -7,4 +7,4 @@ target_sources(${TARGET} PRIVATE
     "IndexedStringList.h"
     "util.cpp" "util.h"
     "GSFileParser.cpp" "GSFileParser.h"
-    "StriCompare.h")
+    "StriCompare.h" "StriCompare.cpp")

@@ -5,6 +5,7 @@
 #include "bitmap.h"
 #include "../file.h"
 #include "../util/util.h"
+#include "../util/StriCompare.h"
 #include <cstdint>
 
 #define STB_IMAGE_RESIZE_IMPLEMENTATION
@@ -16,17 +17,9 @@ Bitmap Bitmap::loadBitmap(const char *fn)
 	char *d; int s;
 	const char *e = strrchr(fn, '.');
 	LoadFile(fn, &d, &s);
-#ifdef _WIN32
-    if(!_stricmp(e, ".tga"))
-#else
-    if(!strcasecmp(e, ".tga"))
-#endif
+    if(!icompare(e, ".tga"))
 		return loadTGA(d, s);
-#ifdef _WIN32
-    if(!_stricmp(e, ".pcx"))
-#else
-	if(!strcasecmp(e, ".pcx"))
-#endif
+    if(!icompare(e, ".pcx"))
 		return loadPCX(d, s);
 	ferr("Unknown bitmap file extension.");
 	return {};

@@ -130,6 +130,8 @@ void ImGuiImpl_NewFrame()
 
 	uint32_t newtime = SDL_GetTicks();
 	io.DeltaTime = (newtime - iglasttime) / 1000.f;
+    if (io.DeltaTime <= 0.0f) // high framerate
+        io.DeltaTime = std::numeric_limits<float>::epsilon();
 	iglasttime = newtime;
 
 	SDL_Keymod kmod = SDL_GetModState();

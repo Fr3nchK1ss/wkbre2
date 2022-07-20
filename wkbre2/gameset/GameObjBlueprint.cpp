@@ -17,12 +17,8 @@ void GameObjBlueprint::loadAnimations(GameObjBlueprint::BPAppearance &ap, const 
 	for (const std::string &fn : gsl) {
 		size_t pp = fn.find('.');
 		std::string name = fn.substr(0, pp);
-		std::string ext = fn.substr(pp + 1);
-#ifdef _WIN32
-        if (!_stricmp(ext.c_str(), "MESH3") || !_stricmp(ext.c_str(), "ANIM3")) {
-#else
-		if (!strcasecmp(ext.c_str(), "MESH3") || !strcasecmp(ext.c_str(), "ANIM3")) {
-#endif
+        std::string ext = fn.substr(pp + 1);
+        if (!icompare(ext.c_str(), "MESH3") || !icompare(ext.c_str(), "ANIM3")) {
 			int pn = name.find_first_of("0123456789");
 			std::string ats = name.substr(0, pn);
 			//std::string num = name.substr(pn);

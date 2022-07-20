@@ -9,11 +9,14 @@
 
 struct StriCompare
 {
-	bool operator() (const std::string &a, const std::string &b) const {
-#ifdef _WIN32
-        return _stricmp(a.c_str(), b.c_str()) < 0;
-#else
-        return strcasecmp(a.c_str(), b.c_str()) < 0;
-#endif
-	}
+    bool operator() (const std::string &a, const std::string &b) const {
+    #ifdef _WIN32
+            return _stricmp(a.c_str(), b.c_str()) < 0;
+    #else
+            return strcasecmp(a.c_str(), b.c_str()) < 0;
+    #endif
+        }
 };
+
+
+int icompare(const std::string &a, const std::string &b);
