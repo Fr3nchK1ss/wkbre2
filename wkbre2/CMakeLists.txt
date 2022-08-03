@@ -122,7 +122,7 @@ if(CMAKE_SYSTEM_NAME MATCHES "Linux")
         ${OPENAL_INCLUDE_DIR}
         ${MPG123_INCLUDE_DIR})
 else()
-    target_link_libraries (${TARGET}
+    target_link_libraries (${TARGET} PRIVATE
         d3d9 ws2_32
         OpenAL::OpenAL
         winmm
