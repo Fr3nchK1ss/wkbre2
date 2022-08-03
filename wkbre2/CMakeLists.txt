@@ -103,7 +103,6 @@ endif()
 target_link_libraries(${TARGET} PRIVATE
     SDL2::SDL2
     GLEW::GLEW
-    OpenGL::OpenGL
     BZip2::BZip2
     imgui
     ${ENET_LIBRARY}
@@ -114,6 +113,7 @@ target_include_directories(${TARGET} PRIVATE
 
 if(CMAKE_SYSTEM_NAME MATCHES "Linux")
     target_link_libraries(${TARGET} PRIVATE
+        OpenGL::OpenGL
         ${OPENAL_LIBRARY}
         ${MPG123_LIBRARIES})
     target_include_directories(${TARGET} PRIVATE
