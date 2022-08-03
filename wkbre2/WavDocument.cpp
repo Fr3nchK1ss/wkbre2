@@ -10,16 +10,16 @@
 void WavDocument::read(BinaryReader& file)
 {
 	uint32_t riffTag = file.readUint32();
-	assert(riffTag == 'FFIR');
+    // assert(riffTag == 'FFIR');
     [[maybe_unused]] uint32_t riffSize = file.readUint32();
 	uint32_t riffFormat = file.readUint32();
-	assert(riffFormat == 'EVAW');
+    // assert(riffFormat == 'EVAW');
 	uint32_t fmtTag = file.readUint32();
-	assert(fmtTag == ' tmf');
+    // assert(fmtTag == ' tmf');
 	uint32_t fmtSize = file.readUint32();
-	assert(fmtSize >= 0x10);
+    assert(fmtSize >= 0x10);
 	formatTag = file.readUint16();
-	//assert(formatTag == 1); // WAVE_FORMAT_PCM
+    assert(formatTag == 1); // WAVE_FORMAT_PCM
 	numChannels = file.readUint16();
 	samplesPerSec = file.readUint32();
 	avgBytesPerSec = file.readUint32();
@@ -27,7 +27,7 @@ void WavDocument::read(BinaryReader& file)
 	pcmBitsPerSample = file.readUint16();
 	file.seek(fmtSize - 0x10);
 	uint32_t dataTag = file.readUint32();
-	assert(dataTag == 'atad');
+    // assert(dataTag == 'atad');
 	uint32_t dataSize = file.readUint32();
 	data.resize(dataSize);
 	//file.read(data.data(), dataSize);

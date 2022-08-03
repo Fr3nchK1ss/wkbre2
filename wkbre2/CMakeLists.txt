@@ -5,33 +5,37 @@ cmake_minimum_required (VERSION 3.13)
 
 set(CMAKE_CXX_STANDARD 17)
 
+set (TARGET "wkbre2")
 add_subdirectory ("imgui")
+
+find_package (BZip2 REQUIRED)           #libbiz2-dev .
+find_package (SDL2 CONFIG REQUIRED)     #libsdl2-dev https://discourse.libsdl.org/t/how-is-sdl2-supposed-to-be-used-with-cmake/31275 .
+find_path(ENET_INCLUDE_DIR enet/enet.h) #libenet-dev .
+find_library(ENET_LIBRARY enet)
 
 
 if(CMAKE_SYSTEM_NAME MATCHES "Linux")
     add_compile_options("-no-pie")
 
-    set (TARGET "wkbre2")
-
-    find_package (BZip2 REQUIRED)       #libbiz2-dev .
-    find_package (SDL2 CONFIG REQUIRED) #libsdl2-dev https://discourse.libsdl.org/t/how-is-sdl2-supposed-to-be-used-with-cmake/31275 .
-    find_package (GLEW REQUIRED)        #libglew-dev .
-    find_package (OpenGL REQUIRED)      #mesa-utils
-    find_package (OpenAL REQUIRED)      #libopenal-dev .
-    find_package (MPG123 REQUIRED)      #libmpg123-dev .
+    find_package (GLEW REQUIRED)         #libglew-dev .
+    find_package (OpenGL REQUIRED)       #mesa-utils
+    find_package (OpenAL REQUIRED)       #libopenal-dev .
+    find_package (MPG123 REQUIRED)       #libmpg123-dev .
     find_package (nlohmann_json REQUIRED)#nlohmann-json3-dev .
+else()
+    find_package (nlohmann_json CONFIG REQUIRED)
+    find_package(OpenAL CONFIG REQUIRED)
+    find_package(mpg123 CONFIG REQUIRED)
+    find_package(glew CONFIG REQUIRED)
 
-    find_path(ENET_INCLUDE_DIR enet/enet.h) #libenet-dev .
-    #message(${ENET_INCLUDE_DIR})
-    find_library(ENET_LIBRARY enet)
-    #message(${ENET_LIBRARY})
+    # Find Discord-RPC
+    find_path(DISCORDRPC_INCLUDE_DIR discord_rpc.h)
+    find_library(DISCORDRPC_LIBRARY discord-rpc)
+endif()
 
-    if(OPENAL_FOUND)
-        message(STATUS "found!")
-    endif()
 
-    add_executable (${TARGET}
-        "wkbre2.cpp" "wkbre2.h"
+if(CMAKE_SYSTEM_NAME MATCHES "Linux")
+    add_executable (${TARGET} "wkbre2.cpp" "wkbre2.h"
         "file.cpp" "file.h"
         "lzrw3.c" "lzrw_headers.h"
         "tags.cpp" "tags.h"
@@ -73,43 +77,8 @@ if(CMAKE_SYSTEM_NAME MATCHES "Linux")
     add_subdirectory ("interface")
     add_subdirectory ("util")
 
-    target_link_libraries(${TARGET} PRIVATE
-        SDL2::SDL2
-        GLEW::GLEW
-        OpenGL::OpenGL
-        BZip2::BZip2
-        imgui
-        ${ENET_LIBRARY}
-        ${OPENAL_LIBRARY}
-        ${MPG123_LIBRARIES}
-        nlohmann_json::nlohmann_json)
-    target_include_directories(${TARGET} PRIVATE
-        "/usr/include/stb"
-        ${ENET_INCLUDE_DIR}
-        ${OPENAL_INCLUDE_DIR}
-        ${MPG123_INCLUDE_DIR})
-
 else()
-
-    find_package (BZip2 REQUIRED)
-    find_package (SDL2 CONFIG REQUIRED)
-    find_package (nlohmann_json CONFIG REQUIRED)
-    find_package(OpenAL CONFIG REQUIRED)
-    find_package(mpg123 CONFIG REQUIRED)
-    find_package(glew CONFIG REQUIRED)
-
-    # Find enet
-    find_path(ENET_INCLUDE_DIR enet/enet.h)
-    find_library(ENET_LIBRARY enet)
-    message(${ENET_LIBRARY})
-    message(${ENET_INCLUDE_DIR})
-
-    # Find Discord-RPC
-    find_path(DISCORDRPC_INCLUDE_DIR discord_rpc.h)
-    find_library(DISCORDRPC_LIBRARY discord-rpc)
-
-    # Ajoutez une source à l'exécutable de ce projet.
-    add_executable (wkbre2 "wkbre2.cpp" "wkbre2.h" "file.cpp" "file.h" "lzrw3.c" "lzrw_headers.h" "util/util.cpp" "util/util.h" "util/GSFileParser.cpp" "util/GSFileParser.h"
+    add_executable (${TARGET} "wkbre2.cpp" "wkbre2.h" "file.cpp" "file.h" "lzrw3.c" "lzrw_headers.h" "util/util.cpp" "util/util.h" "util/GSFileParser.cpp" "util/GSFileParser.h"
       "gameset/gameset.cpp" "gameset/gameset.h" "tags.cpp" "tags.h" "util/TagDict.h" "gameset/GameObjBlueprint.cpp" "gameset/GameObjBlueprint.h"
     "util/IndexedStringList.h" "gameset/values.cpp" "gameset/values.h" "test.cpp" "server.cpp" "server.h" "client.cpp" "client.h" "common.h" "gameset/actions.cpp" "gameset/actions.h"
     "gameset/finder.cpp" "gameset/finder.h" "window.cpp" "window.h" "util/vecmat.cpp" "util/vecmat.h" "gfx/bitmap.cpp" "gfx/bitmap.h" "gfx/renderer.h" "gfx/renderer_d3d9.cpp"
@@ -127,9 +96,40 @@ else()
     "ParticleContainer.cpp" "gfx/ParticleRenderer.h" "gfx/DefaultParticleRenderer.h" "gfx/DefaultParticleRenderer.cpp" "gfx/renderer_ogl3.cpp" "gfx/D3D11EnhancedTerrainRenderer.cpp"
     "gfx/D3D11EnhancedTerrainRenderer.h" "gfx/renderer_d3d11.h" "gfx/D3D11EnhancedSceneRenderer.h" "gfx/D3D11EnhancedSceneRenderer.cpp" "gameset/Plan.cpp" "gameset/Plan.h"  "AIController.h" "AIController.cpp"
     "gameset/ArmyCreationSchedule.h" "gameset/ArmyCreationSchedule.cpp" "gameset/WorkOrder.h" "gameset/WorkOrder.cpp" "common.cpp" "gameset/Commission.h" "gameset/Commission.cpp"  "util/StriCompare.h" "util/StriCompare.cpp")
-    target_link_libraries (wkbre2 imgui SDL2::SDL2 d3d9 ${ENET_LIBRARY} ws2_32 BZip2::BZip2 nlohmann_json::nlohmann_json OpenAL::OpenAL winmm MPG123::libmpg123 d3d11 d3dcompiler ${DISCORDRPC_LIBRARY} opengl32 GLEW::GLEW dxgi)
-    target_include_directories(wkbre2 PRIVATE ${ENET_INCLUDE_DIR} ${DISCORDRPC_INCLUDE_DIR})
+endif()
 
-    # TODO: Ajoutez des tests et installez des cibles si nécessaire.
 
+### Libs and includes common to Linux and Win
+target_link_libraries(${TARGET} PRIVATE
+    SDL2::SDL2
+    GLEW::GLEW
+    OpenGL::OpenGL
+    BZip2::BZip2
+    imgui
+    ${ENET_LIBRARY}
+    nlohmann_json::nlohmann_json)
+target_include_directories(${TARGET} PRIVATE
+    ${ENET_INCLUDE_DIR})
+
+
+if(CMAKE_SYSTEM_NAME MATCHES "Linux")
+    target_link_libraries(${TARGET} PRIVATE
+        ${OPENAL_LIBRARY}
+        ${MPG123_LIBRARIES})
+    target_include_directories(${TARGET} PRIVATE
+        "/usr/include/stb"
+        ${ENET_INCLUDE_DIR}
+        ${OPENAL_INCLUDE_DIR}
+        ${MPG123_INCLUDE_DIR})
+else()
+    target_link_libraries (${TARGET}
+        d3d9 ws2_32
+        OpenAL::OpenAL
+        winmm
+        MPG123::libmpg123
+        d3d11 d3dcompiler
+        ${DISCORDRPC_LIBRARY}
+        opengl32  dxgi)
+    target_include_directories(${TARGET} PRIVATE
+        ${DISCORDRPC_INCLUDE_DIR})
 endif()
